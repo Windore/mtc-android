@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_items">
+
+    <fragment
+        android:id="@+id/navigation_items"
+        android:name="com.github.windore.mtca.ui.items.ItemsFragment"
+        android:label="@string/title_items"
+        tools:layout="@layout/fragment_items" />
+
+    <fragment
+        android:id="@+id/navigation_sync"
+        android:name="com.github.windore.mtca.ui.sync.SyncFragment"
+        android:label="@string/title_sync"
+        tools:layout="@layout/fragment_sync" />
+</navigation>
