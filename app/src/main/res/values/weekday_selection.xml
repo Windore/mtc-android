@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="weekday_selection">
+        <item>@string/none</item>
+        <item>@string/selection_mon</item>
+        <item>@string/selection_tue</item>
+        <item>@string/selection_wed</item>
+        <item>@string/selection_thu</item>
+        <item>@string/selection_fri</item>
+        <item>@string/selection_sat</item>
+        <item>@string/selection_sun</item>
+    </string-array>
+    <string name="none">None</string>
+</resources>

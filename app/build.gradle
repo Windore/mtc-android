@@ -35,7 +35,7 @@ android {
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
 
 cargo {
-    module  = "../mtc-android-rust"
+    module = "../mtc-android-rust"
     libname = "rustmtca"
     targets = ["arm"]
     prebuiltToolchains = true

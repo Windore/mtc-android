@@ -5,15 +5,18 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class ItemsViewModel extends ViewModel {
-
-    private MutableLiveData<String> mText;
+    private final MutableLiveData<ShownItem[]> shownItems;
 
     public ItemsViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is items fragment");
+        shownItems = new MutableLiveData<>();
+        shownItems.setValue(new ShownItem[]{});
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<ShownItem[]> getShownItems() {
+        return shownItems;
+    }
+
+    public void setShownItems(ShownItem[] shownItems) {
+        this.shownItems.setValue(shownItems);
     }
 }
