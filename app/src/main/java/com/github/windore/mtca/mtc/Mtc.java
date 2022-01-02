@@ -1,64 +1,135 @@
 package com.github.windore.mtca.mtc;
 
+import androidx.annotation.Nullable;
+
+import java.time.DayOfWeek;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
-import java.util.Optional;
 
 /**
  * An interface between mtc-rust and java.
  */
 public class Mtc extends Observable {
-    private final ArrayList<Todo> todos = new ArrayList<>();
-    private final ArrayList<Task> tasks = new ArrayList<>();
-    private final ArrayList<Event> events = new ArrayList<>();
-
-    private int idCounter = 0;
+    private static boolean isInitialised = false;
 
     /**
-     * An enum containing all the possible types for MtcItems.
+     * Constructs and returns a instance of Mtc if there has not been any instances yet constructed.
+     * Throws an IllegalStateException if a Mtc has previously been constructed.
+     * @return a Mtc instance
      */
-    public enum ItemType {
-        Todo,
-        Task,
-        Event
+    public static Mtc constructOnlyOnce() {
+        if (isInitialised) {
+            throw new IllegalStateException("Mtc has already been initialised once.");
+        }
+        isInitialised = true;
+        return new Mtc();
+    }
+
+    private Mtc() {
+        System.loadLibrary("rustmtca");
+        nativeInit();
+    }
+
+    private static native void nativeInit();
+
+    private static native long[] nativeGetTodos();
+    private static native long[] nativeGetTodosForDate(long timestamp_secs);
+    private static native long[] nativeGetTodosForWeekday(int weekday_n);
+    private static native String nativeGetTodoString(long id);
+    private static native void nativeAddTodo(String body, int weekday);
+    private static native void nativeRemoveTodo(long id);
+
+    private static native long[] nativeGetTasks();
+    private static native long[] nativeGetTasksForDate(long timestamp_secs);
+    private static native long[] nativeGetTasksForWeekday(int weekday_n);
+    private static native String nativeGetTaskString(long id);
+    private static native long nativeGetTaskDuration(long id);
+    private static native void nativeAddTask(String body, int weekday, long duration);
+    private static native void nativeRemoveTask(long id);
+
+    private static native long[] nativeGetEvents();
+    private static native long[] nativeGetEventsForDate(long timestamp_secs);
+    private static native long[] nativeGetEventsForWeekday(int weekday_n);
+    private static native String nativeGetEventString(long id);
+    private static native void nativeAddEvent(String body, long timestamp_secs);
+    private static native void nativeRemoveEvent(long id);
+
+    /**
+     * Returns all items of a given type.
+     * @param type the type of item to return.
+     * @return all items of a given type.
+     */
+    public List<MtcItem> getItems(MtcItem.ItemType type) {
+        switch (type) {
+            case Todo:
+                return listFromArrayOfIds(nativeGetTodos(), MtcItem.ItemType.Todo);
+            case Task:
+                return listFromArrayOfIds(nativeGetTasks(), MtcItem.ItemType.Task);
+            case Event:
+                return listFromArrayOfIds(nativeGetEvents(), MtcItem.ItemType.Event);
+        }
+        return null;
     }
 
     /**
-     * Returns all todos as an unmodifiable list.
-     *
-     * @return all todos as an unmodifiable list.
+     * Returns all items of a given type which are for a given weekday.
+     * @param type the type of item to return
+     * @param weekday the weekday
+     * @return all items of a given type which are for a given weekday.
      */
-    public List<Todo> getTodos() {
-        return Collections.unmodifiableList(todos);
+    public List<MtcItem> getItemsForWeekday(MtcItem.ItemType type, DayOfWeek weekday) {
+        int n = weekday.getValue();
+        switch (type) {
+            case Todo:
+                return listFromArrayOfIds(nativeGetTodosForWeekday(n), MtcItem.ItemType.Todo);
+            case Task:
+                return listFromArrayOfIds(nativeGetTasksForWeekday(n), MtcItem.ItemType.Task);
+            case Event:
+                return listFromArrayOfIds(nativeGetEventsForWeekday(n), MtcItem.ItemType.Event);
+        }
+        return null;
     }
 
     /**
-     * Returns all tasks as an unmodifiable list.
-     *
-     * @return all tasks as an unmodifiable list.
+     * Returns all items of a given type which are for a given date.
+     * @param type the type of item to return
+     * @param date the date
+     * @return all items of a given type which are for a given date.
      */
-    public List<Task> getTasks() {
-        return Collections.unmodifiableList(tasks);
+    public List<MtcItem> getItemsForDate(MtcItem.ItemType type, Date date) {
+        long timestamp_secs = date.getTime() / 1000;
+        switch (type) {
+            case Todo:
+                return listFromArrayOfIds(nativeGetTodosForDate(timestamp_secs), MtcItem.ItemType.Todo);
+            case Task:
+                return listFromArrayOfIds(nativeGetTasksForDate(timestamp_secs), MtcItem.ItemType.Task);
+            case Event:
+                return listFromArrayOfIds(nativeGetEventsForDate(timestamp_secs), MtcItem.ItemType.Event);
+        }
+        return null;
     }
 
-    /**
-     * Returns all events as an unmodifiable list.
-     *
-     * @return all events as an unmodifiable list.
-     */
-    public List<Event> getEvents() {
-        return Collections.unmodifiableList(events);
+    private List<MtcItem> listFromArrayOfIds(long[] ids, MtcItem.ItemType type) {
+        ArrayList<MtcItem> list = new ArrayList<>();
+        for (long id: ids) {
+            list.add(new MtcItem(type, id, this));
+        }
+        return list;
     }
 
     /**
      * Creates a new Todo and adds it to the todo list.
      */
-    public void newTodo() {
-        Todo todo = new Todo(this);
-        todo.setId(getNextTodoId());
-        todos.add(todo);
+    public void newTodo(String body, @Nullable DayOfWeek weekday) {
+        int n;
+        if (weekday == null) {
+            n = -1;
+        } else {
+            n = weekday.getValue() - 1;
+        }
+        nativeAddTodo(body, n);
 
         setChanged();
         notifyObservers();
@@ -67,10 +138,15 @@ public class Mtc extends Observable {
     /**
      * Creates a new Task and adds it to the task list.
      */
-    public void newTask() {
-        Task task = new Task(this);
-        task.setId(getNextTaskId());
-        tasks.add(task);
+    public void newTask(String body, @Nullable DayOfWeek weekday, long duration) {
+        int n;
+        if (weekday == null) {
+            n = -1;
+        } else {
+            n = weekday.getValue() - 1;
+        }
+
+        nativeAddTask(body, n, duration);
 
         setChanged();
         notifyObservers();
@@ -79,54 +155,45 @@ public class Mtc extends Observable {
     /**
      * Creates a new Event and adds it to the event list.
      */
-    public void newEvent() {
-        Event event = new Event(this);
-        event.setId(getNextEventId());
-        events.add(event);
+    public void newEvent(String body, Date date) {
+        long seconds = date.getTime() / 1000;
+
+        nativeAddEvent(body, seconds);
 
         setChanged();
         notifyObservers();
     }
 
-    /**
-     * Marks an item as removed. Returns a String if something went wrong. Otherwise returns empty.
-     *
-     * @param type The type of an item to be removed
-     * @param id   The id of an item to be removed
-     * @return A String if removing an item failed with a message. Otherwise empty.
-     */
-    public Optional<String> removeItem(ItemType type, int id) {
-        // Todos, Tasks or Events should generally only have a single item with a given id so the following works.
+    String getString(MtcItem.ItemType type, long id) {
         switch (type) {
             case Todo:
-                todos.removeIf(todo -> todo.getId() == id);
+                return nativeGetTodoString(id);
+            case Task:
+                return nativeGetTaskString(id);
+            case Event:
+                return nativeGetEventString(id);
+        }
+        return null;
+    }
+
+    void removeItem(MtcItem.ItemType type, long id) {
+        switch (type) {
+            case Todo:
+                nativeRemoveTodo(id);
                 break;
             case Task:
-                tasks.removeIf(todo -> todo.getId() == id);
+                nativeRemoveTask(id);
                 break;
             case Event:
-                events.removeIf(todo -> todo.getId() == id);
+                nativeRemoveEvent(id);
                 break;
         }
 
         setChanged();
         notifyObservers();
-
-        return Optional.empty();
     }
 
-    private int getNextTodoId() {
-        idCounter++;
-        return idCounter;
-    }
-
-    private int getNextTaskId() {
-        idCounter++;
-        return idCounter;
-    }
-
-    private int getNextEventId() {
-        idCounter++;
-        return idCounter;
+    long getTaskDuration(long id) {
+        return nativeGetTaskDuration(id);
     }
 }

@@ -3,26 +3,35 @@ package com.github.windore.mtca.mtc;
 import java.util.Optional;
 
 /**
- * A base class for different MtcItems.
+ * A class that represents a MtcItem. It can be a todo, task or an event.
  */
-public abstract class MtcItem {
-    private int id;
-    private final String body;
+public class MtcItem {
+    /**
+     * An enum containing all the possible types for MtcItems.
+     */
+    public enum ItemType {
+        Todo,
+        Task,
+        Event
+    }
 
-    protected final Mtc mtc;
+    private final long id;
+    private final ItemType type;
+    private final Mtc mtc;
 
-    protected MtcItem(String body, Mtc mtc) {
-        this.body = body;
+    MtcItem(ItemType type, long id, Mtc mtc) {
+        this.type = type;
+        this.id = id;
         this.mtc = mtc;
     }
 
     /**
-     * Returns the body of the item.
+     * Returns the formatted body of the item.
      *
-     * @return the body of the item.
+     * @return the formatted body of the item.
      */
-    public String getBody() {
-        return body;
+    public String getString() {
+        return mtc.getString(type, id);
     }
 
     /**
@@ -30,18 +39,25 @@ public abstract class MtcItem {
      *
      * @return the id of the item.
      */
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    // This needs to be package private so that the id can be correctly set by Mtc
-    void setId(int id)  {
-        this.id = id;
+    /**
+     * Removes the item.
+     */
+    public void remove() {
+        mtc.removeItem(type, id);
     }
 
-    public abstract Optional<String> removeSelf();
-
-    public Optional<Integer> getDuration() {
+    /**
+     * If the item is a task returns a duration for the task. Otherwise returns empty.
+     * @return a duration for a task. For events and todos empty.
+     */
+    public Optional<Long> getDuration() {
+        if (type == ItemType.Task) {
+            return Optional.of(mtc.getTaskDuration(id));
+        }
         return Optional.empty();
     }
 }
