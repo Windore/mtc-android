@@ -32,6 +32,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 
@@ -71,7 +72,7 @@ public class ItemsFragment extends Fragment implements AdapterView.OnItemSelecte
         });
 
         // Observe the mtc item for changes since those might effect shown items.
-        mtc.addObserver((observable, o) -> updateShownItems(spinner.getSelectedItemPosition()));
+        mtc.addObserver((observable, o) -> updateShownItems());
 
         binding.btnAddItem.setOnClickListener(view -> addNewMtcItem());
 
@@ -187,6 +188,12 @@ public class ItemsFragment extends Fragment implements AdapterView.OnItemSelecte
         builder.create().show();
     }
 
+    private void updateShownItems() {
+        if (binding != null) {
+            updateShownItems(binding.spinnerShownSelection.getSelectedItemPosition());
+        }
+    }
+
     private void updateShownItems(int selection) {
         ArrayList<ShownItem> items = new ArrayList<>();
 
@@ -254,7 +261,6 @@ public class ItemsFragment extends Fragment implements AdapterView.OnItemSelecte
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         updateShownItems(i);
-        Toast.makeText(getContext(), "Item " + i + " selected", Toast.LENGTH_SHORT).show();
     }
 
     @Override

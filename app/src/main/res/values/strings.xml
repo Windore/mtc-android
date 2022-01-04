@@ -33,4 +33,6 @@
     <string name="selection_tasks">Tasks</string>
     <string name="selection_events">Events</string>
     <string name="none">None</string>
+    <string name="error_file_reading">Failed to read file!</string>
+    <string name="error_file_writing">Failed to write file!</string>
 </resources>

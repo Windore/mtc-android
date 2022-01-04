@@ -325,6 +325,8 @@ dependencies = [
  "jni",
  "mtc",
  "num-traits",
+ "serde",
+ "serde_json",
  "ssh2",
 ]
 

@@ -1,6 +1,6 @@
 #[cfg(target_os = "android")]
 #[allow(non_snake_case)]
-use chrono::{NaiveDate, NaiveDateTime, Weekday};
+use chrono::{NaiveDate, Weekday};
 use jni::objects::{JClass, JString};
 use jni::sys::{jint, jlong, jlongArray, jsize, jstring};
 use jni::JNIEnv;
@@ -14,19 +14,59 @@ static mut EVENT_MTC_LIST: Option<MtcList<Event>> = None;
 
 // This code very much expects that Java code is correct.
 // For example all ids should be valid and items of those ids are not marked as removed.
+// Except for nativeInitSaved which accepts invalid json.
 
 // In addition some unwrap method calls probably aren't that safe but for now I'm not going to do
 // much about it.
 
+// TODO look into options of logging errors etc from rust
+
 #[no_mangle]
-pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeInit(_: JNIEnv, _: JClass) {
+pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeInit(
+    _: JNIEnv,
+    _: JClass,
+) {
     TODO_MTC_LIST = Some(MtcList::new(false));
     TASK_MTC_LIST = Some(MtcList::new(false));
     EVENT_MTC_LIST = Some(MtcList::new(false));
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeInitSaved(
+    env: JNIEnv,
+    _: JClass,
+    todo_json: JString,
+    task_json: JString,
+    event_json: JString,
+) {
+    let todo: String = env.get_string(todo_json).unwrap().into();
+    let todos = serde_json::from_str(&todo);
+    if todos.is_ok() {
+        TODO_MTC_LIST = Some(todos.unwrap());
+    } else {
+        TODO_MTC_LIST = Some(MtcList::new(false));
+    }
+
+    let task: String = env.get_string(task_json).unwrap().into();
+    let tasks = serde_json::from_str(&task);
+    if tasks.is_ok() {
+        TASK_MTC_LIST = Some(tasks.unwrap());
+    } else {
+        TASK_MTC_LIST = Some(MtcList::new(false));
+    }
+
+    let event: String = env.get_string(event_json).unwrap().into();
+    let events = serde_json::from_str(&event);
+    if events.is_ok() {
+        EVENT_MTC_LIST = Some(events.unwrap());
+    } else {
+        EVENT_MTC_LIST = Some(MtcList::new(false));
+    }
+}
+
 pub mod todos {
     use super::*;
+    use jni::objects::JObject;
 
     #[no_mangle]
     pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeAddTodo(
@@ -86,9 +126,12 @@ pub mod todos {
     pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeGetTodosForDate(
         env: JNIEnv,
         _: JClass,
-        timestamp_secs: jlong,
+        year: jint,
+        month: jint,
+        day: jint,
     ) -> jlongArray {
-        let date = NaiveDateTime::from_timestamp(timestamp_secs, 0).date();
+        let date = NaiveDate::from_ymd(year, month as u32, day as u32);
+
         let ids: Vec<jlong> = TODO_MTC_LIST
             .as_ref()
             .unwrap()
@@ -118,6 +161,15 @@ pub mod todos {
         let long_array = env.new_long_array(ids.len() as jsize).unwrap();
         env.set_long_array_region(long_array, 0, &ids).unwrap();
         long_array
+    }
+
+    #[no_mangle]
+    pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeGetTodoJsonString(
+        env: JNIEnv,
+        _: JClass,
+    ) -> jstring {
+        let json = serde_json::to_string(TODO_MTC_LIST.as_ref().unwrap()).unwrap();
+        env.new_string(json).unwrap().into_inner()
     }
 }
 
@@ -154,7 +206,7 @@ pub mod tasks {
 
     #[no_mangle]
     pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeGetTaskDuration(
-        env: JNIEnv,
+        _: JNIEnv,
         _: JClass,
         id: jlong,
     ) -> jlong {
@@ -196,9 +248,11 @@ pub mod tasks {
     pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeGetTasksForDate(
         env: JNIEnv,
         _: JClass,
-        timestamp_secs: jlong,
+        year: jint,
+        month: jint,
+        day: jint,
     ) -> jlongArray {
-        let date = NaiveDateTime::from_timestamp(timestamp_secs, 0).date();
+        let date = NaiveDate::from_ymd(year, month as u32, day as u32);
         let ids: Vec<jlong> = TASK_MTC_LIST
             .as_ref()
             .unwrap()
@@ -229,6 +283,15 @@ pub mod tasks {
         env.set_long_array_region(long_array, 0, &ids).unwrap();
         long_array
     }
+
+    #[no_mangle]
+    pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeGetTaskJsonString(
+        env: JNIEnv,
+        _: JClass,
+    ) -> jstring {
+        let json = serde_json::to_string(TASK_MTC_LIST.as_ref().unwrap()).unwrap();
+        env.new_string(json).unwrap().into_inner()
+    }
 }
 
 pub mod events {
@@ -239,9 +302,11 @@ pub mod events {
         env: JNIEnv,
         _: JClass,
         body: JString,
-        timestamp_secs: jlong,
+        year: jint,
+        month: jint,
+        day: jint,
     ) -> jlong {
-        let date = NaiveDateTime::from_timestamp(timestamp_secs, 0).date();
+        let date = NaiveDate::from_ymd(year, month as u32, day as u32);
         let body = env.get_string(body).unwrap().into();
 
         EVENT_MTC_LIST.as_mut().unwrap().add(Event::new(body, date)) as i64
@@ -292,9 +357,11 @@ pub mod events {
     pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeGetEventsForDate(
         env: JNIEnv,
         _: JClass,
-        timestamp_secs: jlong,
+        year: jint,
+        month: jint,
+        day: jint,
     ) -> jlongArray {
-        let date = NaiveDateTime::from_timestamp(timestamp_secs, 0).date();
+        let date = NaiveDate::from_ymd(year, month as u32, day as u32);
         let ids: Vec<jlong> = EVENT_MTC_LIST
             .as_ref()
             .unwrap()
@@ -324,5 +391,14 @@ pub mod events {
         let long_array = env.new_long_array(ids.len() as jsize).unwrap();
         env.set_long_array_region(long_array, 0, &ids).unwrap();
         long_array
+    }
+
+    #[no_mangle]
+    pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeGetEventJsonString(
+        env: JNIEnv,
+        _: JClass,
+    ) -> jstring {
+        let json = serde_json::to_string(EVENT_MTC_LIST.as_ref().unwrap()).unwrap();
+        env.new_string(json).unwrap().into_inner()
     }
 }
