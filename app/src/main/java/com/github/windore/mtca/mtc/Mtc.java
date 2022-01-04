@@ -2,11 +2,15 @@ package com.github.windore.mtca.mtc;
 
 import androidx.annotation.Nullable;
 
+import com.github.windore.mtca.ui.items.ShownItem;
+
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Observable;
+import java.util.stream.Collectors;
 
 /**
  * An interface between mtc-rust and java.
@@ -57,9 +61,9 @@ public class Mtc extends Observable {
     private static native void nativeRemoveEvent(long id);
 
     /**
-     * Returns all items of a given type.
+     * Returns all items of a given type sorted.
      * @param type the type of item to return.
-     * @return all items of a given type.
+     * @return all items of a given type sorted.
      */
     public List<MtcItem> getItems(MtcItem.ItemType type) {
         switch (type) {
@@ -74,13 +78,13 @@ public class Mtc extends Observable {
     }
 
     /**
-     * Returns all items of a given type which are for a given weekday.
+     * Returns all items of a given type which are for a given weekday sorted.
      * @param type the type of item to return
      * @param weekday the weekday
-     * @return all items of a given type which are for a given weekday.
+     * @return all items of a given type which are for a given weekday sorted.
      */
     public List<MtcItem> getItemsForWeekday(MtcItem.ItemType type, DayOfWeek weekday) {
-        int n = weekday.getValue();
+        int n = weekday.getValue() - 1; // Rust uses values from 0-6 for weekdays unlike java
         switch (type) {
             case Todo:
                 return listFromArrayOfIds(nativeGetTodosForWeekday(n), MtcItem.ItemType.Todo);
@@ -93,10 +97,10 @@ public class Mtc extends Observable {
     }
 
     /**
-     * Returns all items of a given type which are for a given date.
+     * Returns all items of a given type which are for a given date sorted.
      * @param type the type of item to return
      * @param date the date
-     * @return all items of a given type which are for a given date.
+     * @return all items of a given type which are for a given date sorted.
      */
     public List<MtcItem> getItemsForDate(MtcItem.ItemType type, Date date) {
         long timestamp_secs = date.getTime() / 1000;
@@ -111,11 +115,22 @@ public class Mtc extends Observable {
         return null;
     }
 
+    /**
+     * Maps all MtcItems in a given list to a list of ShownItems. This function exists for writing readable code.
+     * Returns a new list containing the ShownItems.
+     * @param list list of MtcItem to map to ShownItems.
+     * @return a list of mapped MtcItems as shown items.
+     */
+    public List<ShownItem> listToShown(List<MtcItem> list) {
+        return list.stream().map(ShownItem::new).collect(Collectors.toList());
+    }
+
     private List<MtcItem> listFromArrayOfIds(long[] ids, MtcItem.ItemType type) {
         ArrayList<MtcItem> list = new ArrayList<>();
         for (long id: ids) {
             list.add(new MtcItem(type, id, this));
         }
+        list.sort(Comparator.comparing(MtcItem::getString));
         return list;
     }
 

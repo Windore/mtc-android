@@ -28,6 +28,7 @@ import com.github.windore.mtca.mtc.MtcItem;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -72,9 +73,7 @@ public class ItemsFragment extends Fragment implements AdapterView.OnItemSelecte
         // Observe the mtc item for changes since those might effect shown items.
         mtc.addObserver((observable, o) -> updateShownItems(spinner.getSelectedItemPosition()));
 
-        binding.btnAddItem.setOnClickListener(view -> {
-            addNewMtcItem();
-        });
+        binding.btnAddItem.setOnClickListener(view -> addNewMtcItem());
 
         return root;
     }
@@ -122,9 +121,7 @@ public class ItemsFragment extends Fragment implements AdapterView.OnItemSelecte
                     mtc.newTodo(bodyET.getText().toString(), weekday);
                     dialog.dismiss();
                 })
-                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                });
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
 
         builder.create().show();
     }
@@ -163,9 +160,7 @@ public class ItemsFragment extends Fragment implements AdapterView.OnItemSelecte
                     mtc.newTask(bodyET.getText().toString(), weekday, duration);
                     dialog.dismiss();
                 })
-                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                });
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
 
         builder.create().show();
     }
@@ -194,12 +189,55 @@ public class ItemsFragment extends Fragment implements AdapterView.OnItemSelecte
 
     private void updateShownItems(int selection) {
         ArrayList<ShownItem> items = new ArrayList<>();
-        items.add(new ShownItem("Todos"));
-        items.addAll(mtc.getItems(MtcItem.ItemType.Todo).stream().map(ShownItem::new).collect(Collectors.toList()));
-        items.add(new ShownItem("Tasks"));
-        items.addAll(mtc.getItems(MtcItem.ItemType.Task).stream().map(ShownItem::new).collect(Collectors.toList()));
-        items.add(new ShownItem("Events"));
-        items.addAll(mtc.getItems(MtcItem.ItemType.Event).stream().map(ShownItem::new).collect(Collectors.toList()));
+
+        switch (selection) {
+            case 0: // Today
+            case 1: // Tomorrow
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(Date.from(Instant.now()));
+                calendar.add(Calendar.DAY_OF_MONTH, selection); // Adds 0 if today 1 if tomorrow.
+                Date date = calendar.getTime();
+
+                items.add(new ShownItem("Todos"));
+                items.addAll(mtc.listToShown(mtc.getItemsForDate(MtcItem.ItemType.Todo, date)));
+                items.add(new ShownItem("Tasks"));
+                items.addAll(mtc.listToShown(mtc.getItemsForDate(MtcItem.ItemType.Task, date)));
+                items.add(new ShownItem("Events"));
+                items.addAll(mtc.listToShown(mtc.getItemsForDate(MtcItem.ItemType.Event, date)));
+                break;
+            case 2: // Todos
+                // Show each day individually
+                String[] weekdays = getResources().getStringArray(R.array.array_weekdays);
+                for (int i = 1; i <= 7; i++) {
+                    DayOfWeek weekday = DayOfWeek.of(i);
+                    items.add(new ShownItem(weekdays[i-1]));
+                    items.addAll(mtc.listToShown(mtc.getItemsForWeekday(MtcItem.ItemType.Todo, weekday)));
+                }
+                break;
+            case 3: // Tasks
+                // Show each day individually
+                String[] weekdays1 = getResources().getStringArray(R.array.array_weekdays);
+                for (int i = 1; i <= 7; i++) {
+                    DayOfWeek weekday = DayOfWeek.of(i);
+                    items.add(new ShownItem(weekdays1[i-1]));
+                    items.addAll(mtc.listToShown(mtc.getItemsForWeekday(MtcItem.ItemType.Task, weekday)));
+                }
+                break;
+            case 4: // Events
+                items.addAll(mtc.listToShown(mtc.getItems(MtcItem.ItemType.Event)));
+                break;
+            default: // Weekdays
+                int weekday_n = selection - 4;
+                DayOfWeek weekday = DayOfWeek.of(weekday_n);
+                items.add(new ShownItem("Todos"));
+                items.addAll(mtc.listToShown(mtc.getItemsForWeekday(MtcItem.ItemType.Todo, weekday)));
+                items.add(new ShownItem("Tasks"));
+                items.addAll(mtc.listToShown(mtc.getItemsForWeekday(MtcItem.ItemType.Task, weekday)));
+                items.add(new ShownItem("Events"));
+                items.addAll(mtc.listToShown(mtc.getItemsForWeekday(MtcItem.ItemType.Event, weekday)));
+                break;
+        }
+
 
         // Always add two empty shown items to the end of the list to give space for the add new item btn
         items.add(new ShownItem(""));

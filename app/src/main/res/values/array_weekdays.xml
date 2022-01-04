@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="weekday_selection">
-        <item>@string/none</item>
+    <string-array name="array_weekdays">
         <item>@string/selection_mon</item>
         <item>@string/selection_tue</item>
         <item>@string/selection_wed</item>

@@ -2,7 +2,10 @@
 <resources>
     <string-array name="shown_selection">
         <item>@string/selection_today</item>
-        <item>@string/selection_week</item>
+        <item>@string/selection_tomorrow</item>
+        <item>@string/selection_todos</item>
+        <item>@string/selection_tasks</item>
+        <item>@string/selection_events</item>
         <item>@string/selection_mon</item>
         <item>@string/selection_tue</item>
         <item>@string/selection_wed</item>

@@ -116,7 +116,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
             item = null;
             doTaskBtn.setVisibility(View.GONE);
             removeBtn.setVisibility(View.GONE);
-            tv.setTextSize(18);
+            tv.setTextSize(16);
             tv.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
             tv.setText(header);
         }

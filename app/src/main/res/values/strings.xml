@@ -3,7 +3,6 @@
     <string name="title_items">Items</string>
     <string name="title_sync">Sync</string>
     <string name="selection_today">Today</string>
-    <string name="selection_week">Week</string>
     <string name="selection_mon">Monday</string>
     <string name="selection_tue">Tuesday</string>
     <string name="selection_wed">Wednesday</string>
@@ -29,4 +28,9 @@
     <string name="add_new_todo">Add new todo</string>
     <string name="add_new_task">Add new task</string>
     <string name="add_new_event">Add new event</string>
+    <string name="selection_tomorrow">Tomorrow</string>
+    <string name="selection_todos">Todos</string>
+    <string name="selection_tasks">Tasks</string>
+    <string name="selection_events">Events</string>
+    <string name="none">None</string>
 </resources>
