@@ -1,10 +1,11 @@
 #[cfg(target_os = "android")]
 #[allow(non_snake_case)]
+
 use chrono::{NaiveDate, Weekday};
+use jni::JNIEnv;
 use jni::objects::{JClass, JObject, JString};
 use jni::sys::{jint, jlong, jlongArray, jsize, jstring};
-use jni::JNIEnv;
-use mtc::{sync_remote, Event, MtcItem, MtcList, Task, Todo};
+use mtc::{Event, MtcItem, MtcList, sync_remote, Task, Todo};
 use num_traits::cast::FromPrimitive;
 use ssh2::Session;
 use std::io::Error;
@@ -16,14 +17,12 @@ static mut TODO_MTC_LIST: Option<MtcList<Todo>> = None;
 static mut TASK_MTC_LIST: Option<MtcList<Task>> = None;
 static mut EVENT_MTC_LIST: Option<MtcList<Event>> = None;
 
-// This code very much expects that Java code is correct.
-// For example all ids should be valid and items of those ids are not marked as removed.
-// Except for nativeInitSaved which accepts invalid json.
+// This code assumes that most of the Java code is correct. For example null values should never be passed
+// or ids should always be valid. Only syncing and loading MtcLists from json can fail from "invalid"
+// arguments.
 
-// In addition some unwrap method calls probably aren't that safe but for now I'm not going to do
-// much about it.
-
-// TODO look into options of logging errors etc from rust
+// In addition there is some unnecessary code repetition here but I am probably not going to do anything about
+// that unless I'll have to make changes to it.
 
 #[no_mangle]
 pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeInit(_: JNIEnv, _: JClass) {

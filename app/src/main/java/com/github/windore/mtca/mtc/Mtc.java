@@ -14,7 +14,7 @@ import java.util.Observable;
 import java.util.stream.Collectors;
 
 /**
- * An interface between mtc-rust and java.
+ * An interface between mtc-rust and java. This class is not thread safe.
  */
 public class Mtc extends Observable {
     private static boolean isInitialised = false;
@@ -23,6 +23,7 @@ public class Mtc extends Observable {
      * Constructs and returns a instance of Mtc if there has not been any instances yet constructed.
      * Throws an IllegalStateException if a Mtc has previously been constructed.
      * Populates the mtc with items from given json strings.
+     *
      * @return a Mtc instance
      */
     public static Mtc constructOnlyOnce(String todoJson, String taskJson, String eventJson) {
@@ -38,6 +39,7 @@ public class Mtc extends Observable {
     /**
      * Constructs and returns a instance of Mtc if there has not been any instances yet constructed.
      * Throws an IllegalStateException if a Mtc has previously been constructed.
+     *
      * @return a Mtc instance
      */
     public static Mtc constructOnlyOnce() {
@@ -49,6 +51,9 @@ public class Mtc extends Observable {
         nativeInit();
         return new Mtc();
     }
+
+    // Native methods could probably be reduced and be replaced with type arguments but for now
+    // this is good enough
 
     private static native void nativeInit();
     private static native void nativeInitSaved(String todo_json, String task_json, String event_json);
@@ -81,6 +86,7 @@ public class Mtc extends Observable {
 
     /**
      * Returns all items of a given type sorted.
+     *
      * @param type the type of item to return.
      * @return all items of a given type sorted.
      */
@@ -98,6 +104,7 @@ public class Mtc extends Observable {
 
     /**
      * Returns a json string that represents the list of mtc items of the given type.
+     *
      * @param type the type of item to return a string representation of.
      * @return a json string that represents the list of mtc items of the given type.
      */
@@ -115,7 +122,8 @@ public class Mtc extends Observable {
 
     /**
      * Returns all items of a given type which are for a given weekday sorted.
-     * @param type the type of item to return
+     *
+     * @param type    the type of item to return
      * @param weekday the weekday
      * @return all items of a given type which are for a given weekday sorted.
      */
@@ -134,6 +142,7 @@ public class Mtc extends Observable {
 
     /**
      * Returns all items of a given type which are for a given date sorted.
+     *
      * @param type the type of item to return
      * @param date the date
      * @return all items of a given type which are for a given date sorted.
@@ -158,6 +167,7 @@ public class Mtc extends Observable {
     /**
      * Maps all MtcItems in a given list to a list of ShownItems. This function exists for writing readable code.
      * Returns a new list containing the ShownItems.
+     *
      * @param list list of MtcItem to map to ShownItems.
      * @return a list of mapped MtcItems as shown items.
      */
@@ -167,7 +177,7 @@ public class Mtc extends Observable {
 
     private List<MtcItem> listFromArrayOfIds(long[] ids, MtcItem.ItemType type) {
         ArrayList<MtcItem> list = new ArrayList<>();
-        for (long id: ids) {
+        for (long id : ids) {
             list.add(new MtcItem(type, id, this));
         }
         list.sort(Comparator.comparing(MtcItem::getString));
@@ -225,9 +235,10 @@ public class Mtc extends Observable {
     /**
      * Synchronizes all local mtc items with a server. Connection to the server is established using
      * ssh with a password based auth. Returns a string if something went wrong. Otherwise returns null.
+     *
      * @param username the username for authentication
-     * @param address the socket address (IP:PORT) of the server
-     * @param path the path to the directory containing saved mtc items on the server
+     * @param address  the socket address (IP:PORT) of the server
+     * @param path     the path to the directory containing saved mtc items on the server
      * @param password the password for authentication
      * @return a String if something went wrong. Null on success.
      */

@@ -27,6 +27,7 @@
         <entry key="app/src/main/res/layout/fragment_items.xml" value="0.2658514492753623" />
         <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.2658514492753623" />
         <entry key="app/src/main/res/layout/fragment_sync.xml" value="0.2658514492753623" />
+        <entry key="app/src/main/res/layout/view_mtc_item_rv.xml" value="0.259963768115942" />
         <entry key="app/src/main/res/layout/view_task.xml" value="0.20572916666666666" />
         <entry key="app/src/main/res/layout/view_todo_event.xml" value="0.33" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.36822916666666666" />

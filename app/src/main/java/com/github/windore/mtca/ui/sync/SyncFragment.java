@@ -67,8 +67,8 @@ public class SyncFragment extends Fragment {
         binding.buttonSync.setOnClickListener(view -> {
                     LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
                     new AlertDialog.Builder(context)
-                            .setTitle(R.string.text_password_inp)
-                            .setView(layoutInflater.inflate(R.layout.dialog_get_password, null, false))
+                            .setTitle(R.string.password_prompt)
+                            .setView(layoutInflater.inflate(R.layout.dialog_get_password,null, false))
                             .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss())
                             .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                                 EditText passwordET = ((AlertDialog) dialogInterface).findViewById(R.id.edit_text_password);
@@ -92,25 +92,33 @@ public class SyncFragment extends Fragment {
     @SuppressWarnings("deprecation")
     private void sync(Context context, String username, String address, String path, String password) {
         // ProgressDialogs are deprecated but are in my opinion a perfect fit for this task
-        // and for that reason a ProgressDialog is used here. You could probably do the syncing in
-        // the background but then you would have to account for adding items during syncing and
-        // that is really not something I want to do. So a ProgressDialog is used here since I don't
-        // want to just recreate it.
+        // and for that reason a ProgressDialog is used here.
+        //
+        // To my knowledge the reason for the deprecation of ProgressDialog is the fact that
+        // loading should block user actions but here that is probably the best way.
+        //
+        // You could probably do the syncing in the background but then you would have to account
+        // for adding items during syncing and that is really not something I want to do.
+        // So a ProgressDialog is used here since I don't want to just recreate it.
         ProgressDialog dialog = new ProgressDialog(context);
-        dialog.setTitle("Syncing");
-        dialog.setMessage("Wait for the sync to finish.");
+        dialog.setTitle(getString(R.string.syncing));
+        dialog.setMessage(getString(R.string.wait_for_sync));
         dialog.setCancelable(false);
         dialog.show();
 
+        // Run the sync as async so the ui doesn't freeze
         Supplier<String> syncTask = () -> mtc.sync(username, address, path, password);
         CompletableFuture<String> task = CompletableFuture.supplyAsync(syncTask);
+
+        // However the ui is basically still blocked by the progress dialog which removes the need
+        // for watching out user interactions like adding new items during sync.
 
         // Is this safe?
         task.thenAccept(error -> requireActivity().runOnUiThread(() -> {
             dialog.dismiss();
-            String title = getString(R.string.text_sync_failed);
+            String title = getString(R.string.sync_failed);
             if (error == null) {
-                title = getString(R.string.text_sync_successful);
+                title = getString(R.string.sync_successful);
             }
 
             new AlertDialog.Builder(context)
@@ -129,8 +137,7 @@ public class SyncFragment extends Fragment {
     }
 
     private class SyncTextWatcher implements TextWatcher {
-
-        String key;
+        private final String key;
 
         public SyncTextWatcher(String key) {
             this.key = key;

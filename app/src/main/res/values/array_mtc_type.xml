@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="mtc_type_selection">
+    <string-array name="array_mtc_type">
         <item>@string/todo</item>
         <item>@string/task</item>
         <item>@string/event</item>

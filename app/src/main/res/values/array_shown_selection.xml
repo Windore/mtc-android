@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="array_weekdays">
-        <item>@string/none</item>
+    <string-array name="array_shown_selection">
+        <item>@string/today</item>
+        <item>@string/tomorrow</item>
+        <item>@string/todos</item>
+        <item>@string/tasks</item>
+        <item>@string/events</item>
         <item>@string/weekday_mon</item>
         <item>@string/weekday_tue</item>
         <item>@string/weekday_wed</item>

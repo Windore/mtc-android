@@ -25,7 +25,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_mtc_item_rv, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_shown_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -58,16 +58,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
             removeBtn.setOnClickListener(view -> {
                 if (item == null) return;
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(itemView.getContext());
-                builder
-                        .setMessage(R.string.remove_confirm)
+                new AlertDialog.Builder(itemView.getContext())
+                        .setMessage(R.string.remove_confirmation)
                         .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                             item.remove();
                             dialogInterface.dismiss();
                         })
-                        .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
-
-                builder.create().show();
+                        .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss())
+                        .create()
+                        .show();
             });
 
             // Set do task button functionality
@@ -96,7 +95,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
         public void setMtcItem(MtcItem item) {
             this.item = item;
             removeBtn.setVisibility(View.VISIBLE);
-            // If no duration is set, then the item cannot have do task functionality.
+            // If no duration is set, then the item doesn't have do task functionality.
             if (item.getDuration().isPresent()) {
                 doTaskBtn.setVisibility(View.VISIBLE);
             } else {
