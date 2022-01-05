@@ -1,11 +1,15 @@
 #[cfg(target_os = "android")]
 #[allow(non_snake_case)]
 use chrono::{NaiveDate, Weekday};
-use jni::objects::{JClass, JString};
+use jni::objects::{JClass, JObject, JString};
 use jni::sys::{jint, jlong, jlongArray, jsize, jstring};
 use jni::JNIEnv;
-use mtc::{Event, MtcItem, MtcList, Task, Todo};
+use mtc::{sync_remote, Event, MtcItem, MtcList, Task, Todo};
 use num_traits::cast::FromPrimitive;
+use ssh2::Session;
+use std::io::Error;
+use std::net::TcpStream;
+use std::path::Path;
 
 // Doing this with a static is much easier than the alternatives that seem to be available.
 static mut TODO_MTC_LIST: Option<MtcList<Todo>> = None;
@@ -22,10 +26,7 @@ static mut EVENT_MTC_LIST: Option<MtcList<Event>> = None;
 // TODO look into options of logging errors etc from rust
 
 #[no_mangle]
-pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeInit(
-    _: JNIEnv,
-    _: JClass,
-) {
+pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeInit(_: JNIEnv, _: JClass) {
     TODO_MTC_LIST = Some(MtcList::new(false));
     TASK_MTC_LIST = Some(MtcList::new(false));
     EVENT_MTC_LIST = Some(MtcList::new(false));
@@ -64,9 +65,66 @@ pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeInitSaved(
     }
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeSync(
+    env: JNIEnv,
+    _: JClass,
+    username_j: JString,
+    address_j: JString,
+    path_j: JString,
+    password_j: JString,
+) -> jstring {
+    let username: String = env.get_string(username_j).unwrap().into();
+    let address: String = env.get_string(address_j).unwrap().into();
+    let path: String = env.get_string(path_j).unwrap().into();
+    let password: String = env.get_string(password_j).unwrap().into();
+
+    let sync_result = sync_inner(&username, &address, &path, &password);
+    if sync_result.is_ok() {
+        JObject::null().into_inner()
+    } else {
+        env.new_string(sync_result.err().unwrap().to_string())
+            .unwrap()
+            .into_inner()
+    }
+}
+
+unsafe fn sync_inner(
+    username: &str,
+    address: &str,
+    path: &str,
+    password: &str,
+) -> Result<(), Error> {
+    let tcp = TcpStream::connect(address)?;
+    let mut session = Session::new()?;
+    session.set_tcp_stream(tcp);
+    session.handshake()?;
+    session.userauth_password(username, password)?;
+
+    sync_remote(
+        &session,
+        TODO_MTC_LIST.as_mut().unwrap(),
+        &Path::new(path).join(Path::new("todos.json")),
+        false,
+    )?;
+    sync_remote(
+        &session,
+        TASK_MTC_LIST.as_mut().unwrap(),
+        &Path::new(path).join(Path::new("tasks.json")),
+        false,
+    )?;
+    sync_remote(
+        &session,
+        EVENT_MTC_LIST.as_mut().unwrap(),
+        &Path::new(path).join(Path::new("events.json")),
+        false,
+    )?;
+
+    Ok(())
+}
+
 pub mod todos {
     use super::*;
-    use jni::objects::JObject;
 
     #[no_mangle]
     pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeAddTodo(

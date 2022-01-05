@@ -35,4 +35,14 @@
     <string name="none">None</string>
     <string name="error_file_reading">Failed to read file!</string>
     <string name="error_file_writing">Failed to write file!</string>
+    <string name="text_server_address_port">Socket address:</string>
+    <string name="address_hint">127.0.0.1:22</string>
+    <string name="text_server_path">Server path:</string>
+    <string name="server_path_hint">/home/user/mtc/</string>
+    <string name="text_username">Username:</string>
+    <string name="username_hint">user</string>
+    <string name="text_password">Password</string>
+    <string name="text_sync_failed">Sync failed.</string>
+    <string name="text_sync_successful">Sync successful.</string>
+    <string name="text_password_inp">Password:</string>
 </resources>

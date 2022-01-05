@@ -52,6 +52,7 @@ public class Mtc extends Observable {
 
     private static native void nativeInit();
     private static native void nativeInitSaved(String todo_json, String task_json, String event_json);
+    private static native String nativeSync(String username, String address, String path, String password);
 
     private static native long[] nativeGetTodos();
     private static native long[] nativeGetTodosForDate(int year, int month, int day);
@@ -221,6 +222,24 @@ public class Mtc extends Observable {
         notifyObservers();
     }
 
+    /**
+     * Synchronizes all local mtc items with a server. Connection to the server is established using
+     * ssh with a password based auth. Returns a string if something went wrong. Otherwise returns null.
+     * @param username the username for authentication
+     * @param address the socket address (IP:PORT) of the server
+     * @param path the path to the directory containing saved mtc items on the server
+     * @param password the password for authentication
+     * @return a String if something went wrong. Null on success.
+     */
+    public String sync(String username, String address, String path, String password) {
+        String result = nativeSync(username, address, path, password);
+
+        setChanged();
+        notifyObservers();
+
+        return result;
+    }
+
     String getString(MtcItem.ItemType type, long id) {
         switch (type) {
             case Todo:
@@ -253,4 +272,5 @@ public class Mtc extends Observable {
     long getTaskDuration(long id) {
         return nativeGetTaskDuration(id);
     }
+
 }

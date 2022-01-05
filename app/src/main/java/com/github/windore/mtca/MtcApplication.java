@@ -43,6 +43,7 @@ public class MtcApplication extends Application {
         return mtc;
     }
 
+    // TODO Fix these things as AlertDialogs here are not actually working
     private void saveMtc() {
         writeFile("todos", mtc.getItemsAsJson(MtcItem.ItemType.Todo));
         writeFile("tasks", mtc.getItemsAsJson(MtcItem.ItemType.Task));
