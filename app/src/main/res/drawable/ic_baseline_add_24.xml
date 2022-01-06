@@ -1,4 +1,8 @@
-<!-- This is a copy of an icon part of material design icon set from Google -->
+<!--
+This is a copy of an icon from Google's material icons.
+Therefore it has it's own license separate from the project's license.
+See https://google.github.io/material-design-icons/ for more details on these icons.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

@@ -23,7 +23,7 @@
         android:backgroundTint="@color/lime"
         android:contentDescription="@string/do_task"
         android:padding="10dp"
-        android:src="@drawable/ic_baseline_check_circle_outline_24"
+        android:src="@drawable/ic_baseline_timer_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/remove_item_btn"
         app:layout_constraintTop_toTopOf="parent" />

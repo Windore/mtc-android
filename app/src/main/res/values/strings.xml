@@ -45,4 +45,16 @@
     <string name="password_prompt">Password:</string>
     <string name="syncing">Syncing</string>
     <string name="wait_for_sync">Wait for the sync to finish.</string>
+    <string name="task_timer_notification_channel">Task Timer</string>
+    <string name="task_timer_notification_channel_desc">A Notification channel for displaying timers for tasks.</string>
+    <string name="time_left">Time left:</string>
+    <string name="hours_symbol">h</string>
+    <string name="minutes_symbol">min</string>
+    <string name="seconds_symbol">s</string>
+    <string name="done">Done.</string>
+    <string name="timer_already_running">A timer is already running. Running more than one timer is not supported.</string>
+    <string name="toggle_pause">Toggle Pause</string>
+    <string name="paused">Paused:</string>
+    <string name="resume">Resume</string>
+    <string name="pause">Pause</string>
 </resources>

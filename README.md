@@ -6,3 +6,8 @@ code so installing it will be rather cumbersome.
 
 Note that this app doesn't allow for overwriting and thus you must use the cli app first for writing
 to the server.
+
+## License
+
+This project's files are licensed under the [MIT License](LICENSE.md) unless otherwise stated at the
+start of a file.

@@ -3,6 +3,7 @@
     package="com.github.windore.mtca">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:name=".MtcApplication"
@@ -21,7 +22,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-    </application>
+            </activity>
+        <service android:name=".ui.items.TaskTimerService" />
+        </application>
 
 </manifest>

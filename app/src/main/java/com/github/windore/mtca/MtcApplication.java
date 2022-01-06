@@ -1,12 +1,16 @@
 package com.github.windore.mtca;
 
-import android.app.AlertDialog;
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.core.app.NotificationManagerCompat;
+
 import com.github.windore.mtca.mtc.Mtc;
 import com.github.windore.mtca.mtc.MtcItem;
+import com.github.windore.mtca.ui.items.TaskTimerService;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -44,10 +48,22 @@ public class MtcApplication extends Application {
 
         // Save mtc if it changes
         mtc.addObserver(((observable, o) -> saveMtc()));
+
+        createNotificationChannel();
     }
 
     public Mtc getMtc() {
         return mtc;
+    }
+
+    private void createNotificationChannel() {
+        CharSequence name = getString(R.string.task_timer_notification_channel);
+        String description = getString(R.string.task_timer_notification_channel_desc);
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel channel = new NotificationChannel(TaskTimerService.CHANNEL_ID, name, importance);
+        channel.setDescription(description);
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(channel);
     }
 
     private void saveMtc() {

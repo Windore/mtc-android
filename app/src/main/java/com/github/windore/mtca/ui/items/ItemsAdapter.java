@@ -1,13 +1,13 @@
 package com.github.windore.mtca.ui.items;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,11 +75,19 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
                 // If the item doesn't have a duration it cannot have do task functionality.
                 if (item == null || !item.getDuration().isPresent()) return;
 
-                Toast.makeText(
-                        view1.getContext(),
-                        "Not Yet Implemented",
-                        Toast.LENGTH_SHORT)
-                        .show();
+                if (TaskTimerService.isTimerRunning()) {
+                    new AlertDialog.Builder(view1.getContext())
+                            .setMessage(R.string.timer_already_running)
+                            .setPositiveButton(R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss())
+                            .create()
+                            .show();
+                    return;
+                }
+
+                Intent serviceIntent = new Intent(view1.getContext(), TaskTimerService.class);
+                serviceIntent.putExtra("name", item.getString());
+                serviceIntent.putExtra("duration", item.getDuration().get());
+                view1.getContext().startForegroundService(serviceIntent);
             });
 
             this.removeBtn = removeBtn;
