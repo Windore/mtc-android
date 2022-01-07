@@ -6,11 +6,8 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.core.app.NotificationManagerCompat;
-
 import com.github.windore.mtca.mtc.Mtc;
 import com.github.windore.mtca.mtc.MtcItem;
-import com.github.windore.mtca.ui.items.TaskTimerService;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

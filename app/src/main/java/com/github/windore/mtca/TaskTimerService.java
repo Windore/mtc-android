@@ -1,4 +1,4 @@
-package com.github.windore.mtca.ui.items;
+package com.github.windore.mtca;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -10,9 +10,6 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
-import com.github.windore.mtca.MainActivity;
-import com.github.windore.mtca.R;
 
 import java.util.Timer;
 import java.util.TimerTask;

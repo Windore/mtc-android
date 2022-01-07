@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.windore.mtca.R;
+import com.github.windore.mtca.TaskTimerService;
 import com.github.windore.mtca.mtc.MtcItem;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
