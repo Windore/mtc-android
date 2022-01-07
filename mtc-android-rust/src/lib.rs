@@ -78,6 +78,9 @@ pub unsafe extern "C" fn Java_com_github_windore_mtca_mtc_Mtc_nativeSync(
     let path: String = env.get_string(path_j).unwrap().into();
     let password: String = env.get_string(password_j).unwrap().into();
 
+    // Remove expired events. Todos or tasks cannot expire.
+    EVENT_MTC_LIST.as_mut().unwrap().remove_expired();
+
     let sync_result = sync_inner(&username, &address, &path, &password);
     if sync_result.is_ok() {
         JObject::null().into_inner()

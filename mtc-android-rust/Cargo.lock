@@ -187,7 +187,7 @@ checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
 [[package]]
 name = "mtc"
 version = "0.1.0"
-source = "git+https://github.com/Windore/mtc#378f4f74eb6d6b1fb5fbb98e852f55c20d85d9d3"
+source = "git+https://github.com/Windore/mtc#6549adc0adde59b78a3a9bbbd42a8ceac802a0c8"
 dependencies = [
  "chrono",
  "dirs",
@@ -402,9 +402,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.84"
+version = "1.0.85"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ecb2e6da8ee5eb9a61068762a32fa9619cc591ceb055b3687f4cd4051ec2e06b"
+checksum = "a684ac3dcd8913827e18cd09a68384ee66c1de24157e3c556c9ab16d85695fb7"
 dependencies = [
  "proc-macro2",
  "quote",
