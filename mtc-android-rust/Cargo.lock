@@ -186,8 +186,8 @@ checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
 
 [[package]]
 name = "mtc"
-version = "0.1.0"
-source = "git+https://github.com/Windore/mtc#6549adc0adde59b78a3a9bbbd42a8ceac802a0c8"
+version = "1.0.0"
+source = "git+https://github.com/Windore/mtc#21ad9f225914e65b3222bfacf24df7d6add8ce5d"
 dependencies = [
  "chrono",
  "dirs",
@@ -319,7 +319,7 @@ dependencies = [
 
 [[package]]
 name = "rustmtca"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "chrono",
  "jni",
