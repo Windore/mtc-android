@@ -45,8 +45,8 @@
     <string name="password_prompt">Password:</string>
     <string name="syncing">Syncing</string>
     <string name="wait_for_sync">Wait for the sync to finish.</string>
-    <string name="task_timer_notification_channel">Task Timer</string>
-    <string name="task_timer_notification_channel_desc">A Notification channel for displaying timers for tasks.</string>
+    <string name="event_notification_channel">Event Notification</string>
+    <string name="event_notification_channel_desc">A Notification channel for displaying event notifications.</string>
     <string name="time_left">Time left:</string>
     <string name="hours_symbol">h</string>
     <string name="minutes_symbol">min</string>
