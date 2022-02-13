@@ -1,7 +1,5 @@
-#[cfg(target_os = "android")]
 #[allow(non_snake_case)]
 
-use chrono::{NaiveDate, Weekday};
 use jni::JNIEnv;
 use jni::objects::{JClass, JObject, JString};
 use jni::sys::{jint, jlong, jlongArray, jsize, jstring};
@@ -126,6 +124,7 @@ unsafe fn sync_inner(
 }
 
 pub mod todos {
+    use chrono::{NaiveDate, Weekday};
     use super::*;
 
     #[no_mangle]
@@ -234,6 +233,7 @@ pub mod todos {
 }
 
 pub mod tasks {
+    use chrono::{NaiveDate, Weekday};
     use super::*;
 
     #[no_mangle]
@@ -355,6 +355,7 @@ pub mod tasks {
 }
 
 pub mod events {
+    use chrono::{NaiveDate, Weekday};
     use super::*;
 
     #[no_mangle]
