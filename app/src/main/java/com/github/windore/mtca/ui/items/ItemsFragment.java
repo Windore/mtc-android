@@ -219,8 +219,6 @@ public class ItemsFragment extends Fragment implements AdapterView.OnItemSelecte
 
                 items.add(new ShownItem("Todos"));
                 items.addAll(mtc.listToShown(mtc.getItemsForDate(MtcItem.ItemType.Todo, date)));
-                items.add(new ShownItem("Tasks"));
-                items.addAll(mtc.listToShown(mtc.getItemsForDate(MtcItem.ItemType.Task, date)));
                 items.add(new ShownItem("Events"));
                 items.addAll(mtc.listToShown(mtc.getItemsForDate(MtcItem.ItemType.Event, date)));
                 break;
@@ -247,8 +245,6 @@ public class ItemsFragment extends Fragment implements AdapterView.OnItemSelecte
                 DayOfWeek weekday = DayOfWeek.of(weekday_n);
                 items.add(new ShownItem("Todos"));
                 items.addAll(mtc.listToShown(mtc.getItemsForWeekday(MtcItem.ItemType.Todo, weekday)));
-                items.add(new ShownItem("Tasks"));
-                items.addAll(mtc.listToShown(mtc.getItemsForWeekday(MtcItem.ItemType.Task, weekday)));
                 items.add(new ShownItem("Events"));
                 items.addAll(mtc.listToShown(mtc.getItemsForWeekday(MtcItem.ItemType.Event, weekday)));
                 break;
