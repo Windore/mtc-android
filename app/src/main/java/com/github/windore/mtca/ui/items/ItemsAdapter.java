@@ -1,8 +1,11 @@
 package com.github.windore.mtca.ui.items;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.provider.AlarmClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.windore.mtca.R;
-import com.github.windore.mtca.TaskTimerService;
 import com.github.windore.mtca.mtc.MtcItem;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
@@ -76,19 +78,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
                 // If the item doesn't have a duration it cannot have do task functionality.
                 if (item == null || !item.getDuration().isPresent()) return;
 
-                if (TaskTimerService.isTimerRunning()) {
-                    new AlertDialog.Builder(view1.getContext())
-                            .setMessage(R.string.timer_already_running)
-                            .setPositiveButton(R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss())
-                            .create()
-                            .show();
-                    return;
-                }
+                Context context = view1.getContext();
 
-                Intent serviceIntent = new Intent(view1.getContext(), TaskTimerService.class);
-                serviceIntent.putExtra("name", item.getString());
-                serviceIntent.putExtra("duration", item.getDuration().get());
-                view1.getContext().startForegroundService(serviceIntent);
+                Intent timerIntent = new Intent(AlarmClock.ACTION_SET_TIMER)
+                        .putExtra(AlarmClock.EXTRA_MESSAGE, item.getString())
+                        .putExtra(AlarmClock.EXTRA_LENGTH, (int) (item.getDuration().get() * 60));
+
+                if (context.getPackageManager().resolveActivity(timerIntent, 0) != null) {
+                    context.startActivity(timerIntent);
+                }
             });
 
             this.removeBtn = removeBtn;
