@@ -1,5 +1,7 @@
 # MTCA - MTC for Android
 
+![Screenshot of MTCA](mtca-screenshot.png)
+
 An Android app for [MTC](https://github.com/Windore/mtc) with the same syncing capabilities. MTCA is
 intended to be used alongside MTC. You should use the same version of MTC and MTCA. Using MTCA as a
 standalone app is not recommended as MTCA does not support self-syncing or overwriting. MTCA also
