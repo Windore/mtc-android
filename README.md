@@ -9,11 +9,16 @@ doesn't have all the features of MTC such as creating tasks that are for more th
 MTCA sends notifications each morning at 7:00 if there are events for that day. 
 
 Reading [MTC README.md](https://github.com/Windore/mtc/blob/master/README.md)
-is recommended before using this app. This app is mainly for my own personal use and therefore it
-will probably be only distributed as source code so installing it will be rather cumbersome.
+is recommended before using this app.
 
 Note that this app doesn't allow for overwriting and thus you must use the cli app first for writing
 to the server to make the initial server files.
+
+## Installation
+
+Download the zip file containing the apk used for installing the app from the 
+[releases page](https://github.com/Windore/mtc-android/releases). Make sure that both MTC and MTCA are
+the same version.
 
 ## License
 
