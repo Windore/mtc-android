@@ -84,9 +84,9 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
                         .putExtra(AlarmClock.EXTRA_MESSAGE, item.getString())
                         .putExtra(AlarmClock.EXTRA_LENGTH, (int) (item.getDuration().get() * 60));
 
-                if (context.getPackageManager().resolveActivity(timerIntent, 0) != null) {
-                    context.startActivity(timerIntent);
-                }
+                // This might not be a good idea, but doing this fixed a problem and so far caused
+                // none so it is probably acceptable.
+                context.startActivity(timerIntent);
             });
 
             this.removeBtn = removeBtn;
