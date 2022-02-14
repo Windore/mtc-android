@@ -80,7 +80,7 @@ public class EventCheckReceiver extends BroadcastReceiver {
 
     private Notification createEventNotification(Context context, String message) {
         return new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_baseline_timer_24)
+                .setSmallIcon(R.drawable.ic_baseline_calendar_today_24)
                 .setContentTitle(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
