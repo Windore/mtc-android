@@ -58,7 +58,12 @@ public class EventCheckReceiver extends BroadcastReceiver {
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 7);
         calendar.set(Calendar.MINUTE, 0);
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.SECOND, 0);
+
+        // If 7:00 Is already in the past then the alarm should be set for tomorrow
+        if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
 
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
     }
