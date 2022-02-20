@@ -3,10 +3,11 @@
 ![Screenshot of MTCA](mtca-screenshot.png)
 
 An Android app for [MTC](https://github.com/Windore/mtc) with the same syncing capabilities. MTCA is
-intended to be used alongside MTC. You should use the same version of MTC and MTCA. Using MTCA as a
-standalone app is not recommended as MTCA does not support self-syncing or overwriting. MTCA also
-doesn't have all the features of MTC such as creating tasks that are for more than a one weekday.
-MTCA sends notifications each morning at 7:00 if there are events for that day. 
+intended to be used alongside MTC. You should use the same version of MTC and MTCA. Note that only 
+the first two numbers (X.Y.\[this can be ignored\]) need to be taken into account when comparing 
+version numbers. Using MTCA as a standalone app is not recommended as MTCA does not support self-syncing
+or overwriting. MTCA also doesn't have all the features of MTC such as creating tasks that are for more
+than a one weekday. MTCA sends notifications each morning at 7:00 if there are events for that day. 
 
 Reading [MTC README.md](https://github.com/Windore/mtc/blob/master/README.md)
 is recommended before using this app.
